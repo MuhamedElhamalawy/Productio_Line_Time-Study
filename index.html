@@ -96,8 +96,8 @@
                     <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         <h1 class="text-sm sm:text-lg font-extrabold tracking-wide">دراسة الوقت وقياسات خط الإنتاج</h1>
                         <span class="bg-amber-500 text-slate-950 text-[11px] px-2 py-0.5 rounded-md font-black mono-num shadow-sm">V 1.0</span>
-                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] px-2 py-0.5 rounded-full font-bold mono-num">1 PCB IE</span>
-                        <!-- Engineer Name & Phone Next to Title -->
+                        <span id="headerLineModeBadge" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] px-2 py-0.5 rounded-full font-bold mono-num">Product / Pallet</span>
+                        <!-- Author Name & Phone Next to Title -->
                         <div class="flex items-center gap-1.5 bg-slate-800/90 border border-slate-700 px-2.5 py-0.5 rounded-lg text-xs">
                             <i class="fa-solid fa-user-tie text-blue-400 text-[11px]"></i>
                             <span class="font-extrabold text-white mono-num">MuhamedElhamalawy</span>
@@ -143,19 +143,19 @@
     <main class="max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 flex-1 space-y-6">
 
         <!-- ==========================================
-             SECTION 1: بيانات الخط والمنتج والراوتينج بالدقائق (ثابتة في الواجهة الرئيسية)
+             SECTION 1: بيانات القائم بالقياس والموديل والخط والراوتينج القياسي
              ========================================== -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-gradient-to-l from-slate-900 via-slate-800 to-slate-900 text-white px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                     <span class="w-6 h-6 rounded-lg bg-blue-500 text-white font-bold text-xs flex items-center justify-center shadow">1</span>
-                    <h2 class="font-bold text-sm sm:text-base">أولاً: بيانات الخط والمنتج والراوتينج القياسي (Model, Sheet & Standard Routing)</h2>
+                    <h2 class="font-bold text-sm sm:text-base">أولاً: بيانات القائم بالقياس والموديل والخط والراوتينج القياسي</h2>
                 </div>
                 <div class="flex items-center gap-3 text-xs text-slate-300">
                     <!-- Allowance % Input inside Header Bar -->
                     <div class="flex items-center gap-1.5 no-print bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-700">
                         <span class="text-[11px] text-slate-300 font-bold">نسبة السماحات:</span>
-                        <input type="number" id="allowancePct" value="0" min="0" max="100" step="1" oninput="handleHeaderChange()"
+                        <input type="number" id="allowancePct" value="5" min="0" max="100" step="1" oninput="handleHeaderChange()"
                             class="w-10 text-center text-xs font-extrabold text-emerald-400 bg-slate-900 rounded px-1 py-0.5 outline-none mono-num">
                         <span class="text-[11px] font-bold text-slate-400">%</span>
                     </div>
@@ -167,21 +167,67 @@
             </div>
 
             <div class="p-4 sm:p-5 space-y-5">
-                <!-- Row 1: Product Name, Product Code, Family, Group, PCB/Sheet, Factory, Line, Date -->
+
+                <!-- Top Bar: Shortened Line Mode Switcher (Product / Pallet vs PCB / Sheet) + Measurer Info -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/90">
+                    <!-- نوع الخط (Product / Pallet أو PCB / Sheet) -->
+                    <div class="lg:col-span-4">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                            <i class="fa-solid fa-sliders text-blue-600 ml-1"></i>
+                            نظام القياس والوحدات (Line Mode)
+                        </label>
+                        <div class="grid grid-cols-2 gap-1.5 bg-slate-200/80 p-1 rounded-xl border border-slate-300">
+                            <button type="button" id="modeBtnGeneral" onclick="setLineModeType('General')"
+                                class="py-2 px-2.5 rounded-lg text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm mono-num">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                                <span>Product / Pallet</span>
+                            </button>
+                            <button type="button" id="modeBtnPCB" onclick="setLineModeType('PCB')"
+                                class="py-2 px-2.5 rounded-lg text-xs font-extrabold transition flex items-center justify-center gap-1.5 text-slate-700 hover:bg-slate-100 mono-num">
+                                <i class="fa-solid fa-microchip"></i>
+                                <span>PCB / Sheet</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- اسم القائم بالقياس (Measurer Name - بدون كلمة مهندس) -->
+                    <div class="lg:col-span-5">
+                        <label for="measurerName" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                            <i class="fa-solid fa-user-check text-emerald-600 ml-1"></i>
+                            اسم القائم بالقياس <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="measurerName" oninput="handleHeaderChange()"
+                            placeholder="اكتب اسم القائم بالقياس..."
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:border-blue-600 outline-none transition">
+                    </div>
+
+                    <!-- الرقم التعريفي للقائم بالقياس (Measurer ID) -->
+                    <div class="lg:col-span-3">
+                        <label for="measurerId" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                            <i class="fa-solid fa-id-card text-indigo-600 ml-1"></i>
+                            الرقم التعريفي (ID) <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="measurerId" oninput="handleHeaderChange()"
+                            placeholder="مثال: 10452"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:border-blue-600 outline-none transition mono-num">
+                    </div>
+                </div>
+
+                <!-- Row 1: Product Name, Product Code, Family, Group, Product/Pallet (or PCB/Sheet), Factory, Line, Date -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
 
                     <!-- اسم المنتج / الموديل -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
-                            <i class="fa-solid fa-microchip text-blue-600 ml-1"></i>
+                            <i class="fa-solid fa-cube text-blue-600 ml-1"></i>
                             اسم المنتج / الموديل <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" id="productName" oninput="handleHeaderChange()"
-                            placeholder="مثال: PBA-MAIN-43"
+                            placeholder="مثال: LED-TV-43 / PBA-MAIN"
                             class="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3 py-2 text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 outline-none transition">
                     </div>
 
-                    <!-- كود المنتج (Product Code / SAP / Part No.) -->
+                    <!-- كود المنتج (Product Code - CAPITAL LETTERS) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             <i class="fa-solid fa-barcode text-cyan-600 ml-1"></i>
@@ -200,7 +246,7 @@
                             العائلة (Product Family)
                         </label>
                         <input type="text" id="productFamily" list="familySuggestions" oninput="handleHeaderChange()"
-                            placeholder="مثال: 43 Inch FHD / Chassis Series"
+                            placeholder="مثال: 43 Inch FHD / Home Appliance"
                             class="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3 py-2 text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 outline-none transition">
                         <datalist id="familySuggestions">
                             <option value="32 Inch HD Series"></option>
@@ -208,8 +254,8 @@
                             <option value="50-55 Inch UHD 4K"></option>
                             <option value="65-75 Inch QLED"></option>
                             <option value="Smart Chassis Platform"></option>
-                            <option value="Monitor PCB Family"></option>
-                            <option value="Home Appliance PCB"></option>
+                            <option value="Monitor Family"></option>
+                            <option value="Home Appliance Series"></option>
                         </datalist>
                     </div>
 
@@ -223,65 +269,62 @@
                             placeholder="اختر أو اكتب الجروب..."
                             class="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3 py-2 text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 outline-none transition">
                         <datalist id="groupSuggestions">
+                            <option value="Final Assembly"></option>
+                            <option value="Sub-Assembly"></option>
+                            <option value="Packing & Palletizing"></option>
                             <option value="Main Board"></option>
                             <option value="Power Supply (SMPS)"></option>
                             <option value="LED Driver"></option>
                             <option value="Control Board"></option>
-                            <option value="T-Con Board"></option>
-                            <option value="IR & Key Board"></option>
                         </datalist>
                     </div>
 
-                    <!-- عدد PCB / Sheet -->
+                    <!-- عدد الوحدات: Product / Pallet أو PCB / Sheet -->
                     <div>
                         <label class="block text-xs font-bold text-indigo-900 mb-1">
                             <i class="fa-solid fa-table-cells-large text-indigo-600 ml-1"></i>
-                            عدد البوردات في الشيت (PCB / Sheet)
+                            <span id="lblBatchCountTitle" class="mono-num">Product / Pallet</span>
                         </label>
                         <div class="flex items-stretch rounded-xl border-2 border-indigo-300 bg-indigo-50/40 overflow-hidden focus-within:border-indigo-600 focus-within:bg-white transition">
                             <input type="number" id="pcbPerSheet" min="1" step="1" value="1" oninput="handleHeaderChange()"
                                 class="w-full px-3 py-1.5 text-base font-extrabold text-indigo-950 bg-transparent outline-none mono-num text-left">
-                            <span class="bg-indigo-100 text-indigo-800 px-2.5 flex items-center justify-center text-[11px] font-extrabold border-r border-indigo-200 shrink-0 select-none mono-num">
-                                PCB / Sheet
+                            <span id="lblBatchCountBadge" class="bg-indigo-100 text-indigo-800 px-2.5 flex items-center justify-center text-[11px] font-extrabold border-r border-indigo-200 shrink-0 select-none mono-num">
+                                Product / Pallet
                             </span>
                         </div>
                     </div>
 
-                    <!-- اسم المصنع (Default: 1 PCB) -->
+                    <!-- اسم المصنع (فارغ افتراضياً) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             <i class="fa-solid fa-industry text-emerald-600 ml-1"></i>
-                            اسم المصنع (Default)
+                            اسم المصنع (Factory)
                         </label>
-                        <div class="flex items-stretch rounded-xl border border-emerald-400 bg-emerald-50/40 overflow-hidden focus-within:border-emerald-600 focus-within:bg-white transition">
-                            <input type="text" id="factoryName" list="factorySuggestions" value="1 PCB" oninput="handleHeaderChange()"
-                                class="w-full px-3 py-2 text-sm font-extrabold text-emerald-950 bg-transparent outline-none">
-                            <span class="bg-emerald-600 text-white px-2 flex items-center justify-center text-[10px] font-bold shrink-0 select-none">
-                                Default
-                            </span>
-                        </div>
+                        <input type="text" id="factoryName" list="factorySuggestions" value="" oninput="handleHeaderChange()"
+                            placeholder="ادخل اسم المصنع..."
+                            class="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3 py-2 text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 outline-none transition">
                         <datalist id="factorySuggestions">
+                            <option value="Final Assembly Plant"></option>
                             <option value="1 PCB"></option>
                             <option value="2 PCB"></option>
                             <option value="SMD Plant"></option>
                         </datalist>
                     </div>
 
-                    <!-- اسم الخط (Default: 1 PCB) -->
+                    <!-- اسم الخط (فارغ افتراضياً) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             <i class="fa-solid fa-diagram-project text-amber-600 ml-1"></i>
                             اسم الخط (Line)
                         </label>
-                        <input type="text" id="lineName" list="lineSuggestions" value="1 PCB" oninput="handleHeaderChange()"
-                            placeholder="مثال: 1 PCB / Line 1"
+                        <input type="text" id="lineName" list="lineSuggestions" value="" oninput="handleHeaderChange()"
+                            placeholder="ادخل اسم الخط..."
                             class="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3 py-2 text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 outline-none transition">
                         <datalist id="lineSuggestions">
-                            <option value="1 PCB"></option>
+                            <option value="Assembly Line 1"></option>
+                            <option value="Assembly Line 2"></option>
                             <option value="SMT Line 1"></option>
-                            <option value="SMT Line 2"></option>
                             <option value="MI Line 1"></option>
-                            <option value="MI Line 2"></option>
                         </datalist>
                     </div>
 
@@ -302,21 +345,22 @@
                     </div>
                 </div>
 
-                <!-- Product Identification Quick Summary Bar -->
+                <!-- Product & Measurer Identification Quick Summary Bar -->
                 <div class="bg-slate-100/90 border border-slate-200/90 rounded-xl px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="font-extrabold text-slate-700 flex items-center gap-1">
                             <i class="fa-solid fa-tag text-blue-600"></i>
-                            بطاقة تعريف الموديل:
+                            بطاقة الدراسة:
                         </span>
+                        <span id="summaryBadgeMeasurer" class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-2.5 py-0.5 rounded-lg font-extrabold">القائم بالقياس: غير محدد (ID: -)</span>
                         <span id="summaryBadgeModel" class="bg-white border border-slate-300 text-slate-800 px-2.5 py-0.5 rounded-lg font-bold">الموديل: غير محدد</span>
                         <span id="summaryBadgeCode" class="bg-cyan-50 border border-cyan-200 text-cyan-900 px-2.5 py-0.5 rounded-lg font-extrabold mono-num">Code: -</span>
                         <span id="summaryBadgeFamily" class="bg-teal-50 border border-teal-200 text-teal-900 px-2.5 py-0.5 rounded-lg font-bold">Family: -</span>
                         <span id="summaryBadgeGroup" class="bg-indigo-50 border border-indigo-200 text-indigo-900 px-2.5 py-0.5 rounded-lg font-bold">Group: -</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span id="summaryBadgeSheet" class="bg-indigo-600 text-white px-2.5 py-0.5 rounded-lg font-extrabold mono-num">1 PCB / Sheet</span>
-                        <span id="summaryBadgePlant" class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-lg font-extrabold mono-num">1 PCB</span>
+                        <span id="summaryBadgeSheet" class="bg-indigo-600 text-white px-2.5 py-0.5 rounded-lg font-extrabold mono-num">1 Product / Pallet</span>
+                        <span id="summaryBadgePlant" class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-lg font-extrabold mono-num">المصنع: - | الخط: -</span>
                     </div>
                 </div>
 
@@ -377,7 +421,7 @@
                             </div>
                             <div class="my-1.5 flex items-baseline justify-between">
                                 <span id="stdHourlyRateDisplay" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mono-num">0</span>
-                                <span class="text-xs font-bold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg mono-num">PCB / Hr</span>
+                                <span id="lblStdRateUnit" class="text-xs font-bold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg mono-num">Product / Hr</span>
                             </div>
                             <div class="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[11px]">
                                 <span class="text-slate-400">المعادلة:</span>
@@ -433,8 +477,8 @@
                             </span>
                         </div>
                         <h3 class="font-black text-base text-slate-900 mb-1 group-hover:text-blue-700 transition">1. تسجيل بيانات عملية</h3>
-                        <p class="text-xs text-slate-500 leading-relaxed">
-                            إضافة عملية جديدة (Assembly / Retouch / Test / Programming / Adjust)، وتحديد PCB أو Sheet، وOnline/Offline، وطريقة الحساب.
+                        <p id="hubBtn1Desc" class="text-xs text-slate-500 leading-relaxed">
+                            إضافة عملية جديدة (Assembly / Manufacture / Adjust / Test / Packing)، وتحديد وحدة التشغيل، وOnline/Offline، وطريقة الحساب.
                         </p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
@@ -512,7 +556,7 @@
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-600">التوازن / المعدل الفعلي:</span>
-                        <span id="hubBadgeAnalysisSummary" class="bg-rose-600 text-white font-extrabold px-2.5 py-0.5 rounded-lg mono-num">0% | 0 PCB/Hr</span>
+                        <span id="hubBadgeAnalysisSummary" class="bg-rose-600 text-white font-extrabold px-2.5 py-0.5 rounded-lg mono-num">0% | 0 /Hr</span>
                     </div>
                 </button>
 
@@ -539,7 +583,7 @@
                 <div class="pt-2 sm:pt-0">
                     <span class="text-[11px] text-slate-400 block">المعدل الفعلي الجديد vs الراوتينج</span>
                     <strong id="stripRateCompare" class="text-xl font-black text-amber-400 mono-num">0 / 0</strong>
-                    <span class="text-[11px] text-slate-400 mr-1">PCB/Hr</span>
+                    <span id="stripRateUnit" class="text-[11px] text-slate-400 mr-1">Product/Hr</span>
                 </div>
             </div>
         </section>
@@ -586,85 +630,45 @@
                             <i class="fa-solid fa-file-lines text-indigo-600 ml-1"></i>
                             وصف العملية (Operation Description)
                         </label>
-                        <input type="text" id="newOpDescription" placeholder="مثال: تجميع مكثفات الباور + فيوز..."
+                        <input type="text" id="newOpDescription" placeholder="مثال: تجميع الشاسيه / فحص الوظائف..."
                             onkeydown="if(event.key==='Enter'){ event.preventDefault(); addNewOperation(false); }"
                             class="w-full rounded-xl border border-indigo-200 bg-white px-3 py-2.5 text-xs sm:text-sm font-bold text-slate-900 focus:border-indigo-600 outline-none transition">
                     </div>
                 </div>
 
-                <!-- 2. نوع العملية الأساسي: Assembly / Retouch / Test / Programming / Adjust -->
+                <!-- 2. نوع العملية الأساسي (يتغير ديناميكياً حسب نوع الخط: Product/Pallet أو PCB/Sheet) -->
                 <div>
                     <label class="block text-xs font-extrabold text-slate-700 mb-2">
                         2. اختر نوع العملية (Operation Type) <span class="text-rose-500">*</span>
                     </label>
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="opCategoryGroup">
-                        <button type="button" onclick="setFormPill('newOpCategory', 'Assembly')" data-val="Assembly"
-                            class="op-cat-btn bg-blue-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs border border-blue-600 shadow-sm transition">
-                            Assembly
-                        </button>
-                        <button type="button" onclick="setFormPill('newOpCategory', 'Retouch')" data-val="Retouch"
-                            class="op-cat-btn bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-200 transition">
-                            Retouch
-                        </button>
-                        <button type="button" onclick="setFormPill('newOpCategory', 'Test')" data-val="Test"
-                            class="op-cat-btn bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-200 transition">
-                            Test
-                        </button>
-                        <button type="button" onclick="setFormPill('newOpCategory', 'Programming')" data-val="Programming"
-                            class="op-cat-btn bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-200 transition">
-                            Programming
-                        </button>
-                        <button type="button" onclick="setFormPill('newOpCategory', 'Adjust')" data-val="Adjust"
-                            class="op-cat-btn bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-200 transition">
-                            Adjust
-                        </button>
+                        <!-- يتم توليده ديناميكياً عبر دالة renderCategoryPillsInModal -->
                     </div>
                     <input type="hidden" id="newOpCategory" value="Assembly">
                 </div>
 
-                <!-- 3. هل اللي شغال PCB ولا Sheet؟ + 4. Online / Offline -->
+                <!-- 3. وحدة التشغيل (Product vs Pallet أو PCB vs Sheet) + 4. Online / Offline -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            <i class="fa-solid fa-location-dot text-blue-600 ml-1"></i>
-                            اسم / رقم المحطة (Station Name)
-                        </label>
-                        <input type="text" id="newOpName" placeholder="مثال: مرحلة 1 / Station A1..."
-                            class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-xs sm:text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
-                            <i class="fa-solid fa-file-lines text-indigo-600 ml-1"></i>
-                            وصف العملية (Operation Description)
-                        </label>
-                        <input type="text" id="newOpDescription" placeholder="مثال: تجميع مكثفات الباور + فيوز..."
-                            class="w-full rounded-xl border border-indigo-200 bg-indigo-50/40 px-3 py-2.5 text-xs sm:text-sm font-bold text-slate-900 focus:bg-white focus:border-indigo-600 outline-none">
-                    </div>
-                </div>
-
-                <!-- 2. هل اللي شغال PCB ولا Sheet؟ + 3. Online / Offline -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div>
-                        <label class="block text-xs font-extrabold text-slate-700 mb-1.5">
-                            2. وحدة التشغيل (PCB أم Sheet)
+                        <label id="lblModalWorkUnitTitle" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                            3. وحدة التشغيل (Product / Pallet)
                         </label>
                         <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                            <button type="button" onclick="setFormPill('newOpWorkUnit', 'PCB')" data-val="PCB"
+                            <button type="button" id="btnUnitSingle" onclick="setFormPill('newOpWorkUnit', 'Single')" data-val="Single"
                                 class="op-unit-btn bg-indigo-600 text-white font-extrabold py-2 rounded-lg text-xs shadow-sm transition mono-num">
-                                PCB
+                                Product
                             </button>
-                            <button type="button" onclick="setFormPill('newOpWorkUnit', 'Sheet')" data-val="Sheet"
+                            <button type="button" id="btnUnitMulti" onclick="setFormPill('newOpWorkUnit', 'Multi')" data-val="Multi"
                                 class="op-unit-btn text-slate-700 font-extrabold py-2 rounded-lg text-xs transition mono-num">
-                                Sheet
+                                Pallet
                             </button>
                         </div>
-                        <input type="hidden" id="newOpWorkUnit" value="PCB">
+                        <input type="hidden" id="newOpWorkUnit" value="Single">
                     </div>
 
                     <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-1.5">
-                            3. مكان العملية (Online / Offline)
+                            4. مكان العملية (Online / Offline)
                         </label>
                         <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
                             <button type="button" onclick="setFormPill('newOpLineMode', 'Online')" data-val="Online"
@@ -680,7 +684,7 @@
                     </div>
                 </div>
 
-                <!-- 4. تصنيف المورد + عدد العمالة المسجل للخط (HC) -->
+                <!-- 5. تصنيف المورد + عدد العمالة المسجل للخط (HC) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">نوع المورد بالمرحلة (Labor / Machine)</label>
@@ -699,13 +703,13 @@
                     </div>
                 </div>
 
-                <!-- 5. طريقة حساب الزمن حسب القاعدة المعتمدة:
+                <!-- 6. طريقة حساب الزمن حسب القاعدة المعتمدة:
                      - Operation: يتجاهل عدد العاملين ويقيس متوسط الأوقات مباشرة
                      - Labor: يقسم متوسط الوقت على عدد العاملين (÷ HC) -->
                 <div>
                     <label class="block text-xs font-extrabold text-slate-700 mb-1.5">
                         <i class="fa-solid fa-calculator text-teal-600 ml-1"></i>
-                        4. طريقة قياس وحساب وقت العملية (Operation vs. Labor)
+                        5. طريقة قياس وحساب وقت العملية (Operation vs. Labor)
                     </label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                         <button type="button" onclick="setFormPill('newOpCalcMode', 'Operation')" data-val="Operation"
@@ -722,10 +726,10 @@
                     <input type="hidden" id="newOpCalcMode" value="Operation">
                 </div>
 
-                <!-- تنبيه ذكي عند اختيار Sheet -->
+                <!-- تنبيه ذكي عند اختيار Pallet أو Sheet -->
                 <div id="sheetDivisionHint" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-900 rounded-xl p-3 text-xs font-bold flex items-center gap-2.5">
                     <i class="fa-solid fa-calculator text-indigo-600 text-base"></i>
-                    <span>بما أن العملية تتم على <strong>Sheet</strong>، سيتم قسمة متوسط الوقت تلقائياً على عدد الـ PCB في الشيت (<strong id="hintPcbCount">1</strong> PCB/Sheet).</span>
+                    <span id="sheetDivisionHintText">سيتم قسمة متوسط الوقت تلقائياً على عدد الوحدات (<strong id="hintPcbCount">1</strong>).</span>
                 </div>
             </div>
 
@@ -1014,7 +1018,7 @@
                             <div>
                                 <span class="text-[10px] text-slate-400 block">المعدل الفعلي الجديد</span>
                                 <span id="kpiActualHourlyRate" class="text-2xl font-black text-indigo-700 mono-num">0</span>
-                                <span class="text-[10px] font-bold text-slate-500 mono-num">PCB/Hr</span>
+                                <span id="kpiRateUnitText" class="text-[10px] font-bold text-slate-500 mono-num">Product/Hr</span>
                             </div>
                             <div class="text-left">
                                 <span class="text-[10px] text-slate-400 block">زمن الـ Bottleneck</span>
@@ -1027,7 +1031,7 @@
                                 Bottleneck: -
                             </div>
                             <div id="kpiRateVsRoutingBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 truncate">
-                                مقارنة بالراوتينج (0 PCB/Hr): -
+                                مقارنة بالراوتينج (0 /Hr): -
                             </div>
                         </div>
                     </div>
@@ -1090,7 +1094,7 @@
                     <!-- Card 4: Total Operations Time (Online / Offline) vs Labor Routing -->
                     <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
-                            <span class="font-extrabold">إجمالي أزمنة العمليات (Min/PCB)</span>
+                            <span id="lblCard4Title" class="font-extrabold">إجمالي أزمنة العمليات (Min/Product)</span>
                             <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-clock"></i></span>
                         </div>
                         <div class="flex items-baseline justify-between my-1">
@@ -1129,12 +1133,12 @@
                             <div class="border-l border-slate-100">
                                 <span class="text-[10px] text-slate-400 block">معدل الراوتينج (60÷Machine)</span>
                                 <strong id="compStdUPH" class="text-base font-black text-slate-800 mono-num">0</strong>
-                                <span class="text-[10px] text-slate-500 block">PCB / Hr</span>
+                                <span id="compUnit1" class="text-[10px] text-slate-500 block">Product / Hr</span>
                             </div>
                             <div>
                                 <span class="text-[10px] text-slate-400 block">المعدل الفعلي الجديد (60÷BN)</span>
                                 <strong id="compActualUPH" class="text-base font-black text-indigo-600 mono-num">0</strong>
-                                <span class="text-[10px] text-slate-500 block">PCB / Hr</span>
+                                <span id="compUnit2" class="text-[10px] text-slate-500 block">Product / Hr</span>
                             </div>
                         </div>
                         <div id="compUPHDiffText" class="mt-2 text-[11px] font-extrabold text-center py-1 rounded-lg bg-slate-100 text-slate-700">
@@ -1270,8 +1274,8 @@
             <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3 text-xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h3 class="font-bold text-base text-slate-900 mb-1">بدء دراسة جديدة وتفريغ العمليات؟</h3>
-            <p class="text-xs text-slate-500 mb-5">سيتم مسح العمليات الحالية وإعادة ضبط المصنع الافتراضي (1 PCB) وتاريخ اليوم.</p>
+            <h3 class="font-bold text-base text-slate-900 mb-1">بدء دراسة جديدة وتفريغ البيانات؟</h3>
+            <p class="text-xs text-slate-500 mb-5">سيتم مسح العمليات والبيانات الحالية والبدء بصفحة جديدة فارغة بتاريخ اليوم.</p>
             <div class="flex items-center justify-center gap-3">
                 <button onclick="closeConfirmModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2.5 rounded-xl text-xs font-bold">
                     إلغاء
@@ -1295,8 +1299,12 @@
         // ==========================================
         // STATE MANAGEMENT (V 1.0 - MuhamedElhamalawy 01113362286)
         // ==========================================
-        const STORAGE_KEY_CURRENT = 'pcb_time_study_v2_active';
+        const STORAGE_KEY_CURRENT = 'pcb_time_study_v1_multi_line';
         const STORAGE_KEY_ARCHIVE = 'pcb_time_study_v2_archive';
+
+        // Operation Categories per Mode
+        const PRODUCT_CATEGORIES = ['Assembly', 'Manufacture', 'Adjust', 'Test', 'Packing'];
+        const PCB_CATEGORIES = ['Assembly', 'Retouch', 'Test', 'Programming', 'Adjust'];
 
         function getTodayISO() {
             const now = new Date();
@@ -1308,17 +1316,20 @@
 
         function getDefaultEmptyState() {
             return {
+                lineModeType: 'General', // 'General' (Product / Pallet) or 'PCB' (PCB / Sheet)
+                measurerName: '',
+                measurerId: '',
                 productName: '',
                 productCode: '',
                 productFamily: '',
                 productGroup: '',
-                pcbPerSheet: 1,
-                factoryName: '1 PCB',
-                lineName: '1 PCB',
+                pcbPerSheet: 1, // Represents Product / Pallet OR PCB / Sheet
+                factoryName: '',
+                lineName: '',
                 studyDate: getTodayISO(),
                 routingLaborMin: 0,
                 routingMachineMin: 0,
-                allowancePct: 0, // 0% default so average calculations are direct unless user adds allowance
+                allowancePct: 5,
                 activeOperationId: null,
                 operations: [] // Empty by default
             };
@@ -1332,8 +1343,45 @@
         let swElapsedMs = 0;
         let swRunning = false;
 
-        // Normalize calcMode for backwards compatibility:
-        // User rule:
+        // Terminology Helper based on lineModeType ('General' vs 'PCB')
+        function getTerms() {
+            if (appState.lineModeType === 'PCB') {
+                return {
+                    singleCode: 'PCB',
+                    singleLabel: 'PCB',
+                    multiCode: 'Sheet',
+                    multiLabel: 'Sheet',
+                    ratioTitle: 'PCB / Sheet',
+                    ratioBadge: 'PCB / Sheet',
+                    rateUnit: 'PCB / Hr',
+                    perUnitMin: 'Min / PCB',
+                    categories: PCB_CATEGORIES
+                };
+            }
+            return {
+                singleCode: 'Product',
+                singleLabel: 'Product',
+                multiCode: 'Pallet',
+                multiLabel: 'Pallet',
+                ratioTitle: 'Product / Pallet',
+                ratioBadge: 'Product / Pallet',
+                rateUnit: 'Product / Hr',
+                perUnitMin: 'Min / Product',
+                categories: PRODUCT_CATEGORIES
+            };
+        }
+
+        // Normalize workUnit to 'Single' or 'Multi' internally while supporting 'Product'/'Pallet'/'PCB'/'Sheet'
+        function isMultiUnitOp(op) {
+            return op.workUnit === 'Multi' || op.workUnit === 'Sheet' || op.workUnit === 'Pallet' || op.workUnit === 'Batch / Pallet';
+        }
+
+        function getOpUnitDisplay(op) {
+            const terms = getTerms();
+            return isMultiUnitOp(op) ? terms.multiCode : terms.singleCode;
+        }
+
+        // Normalize calcMode:
         // - 'Operation' => ignores HC (average of times directly)
         // - 'Labor'     => divides by HC (÷ HC)
         function normalizeCalcMode(mode) {
@@ -1344,22 +1392,94 @@
         // Initialize Application
         window.onload = function () {
             loadStateFromLocalStorage();
+            if (!appState.lineModeType) appState.lineModeType = 'General';
             if (!appState.studyDate) appState.studyDate = getTodayISO();
-            if (!appState.factoryName) appState.factoryName = '1 PCB';
-            if (!appState.lineName) appState.lineName = '1 PCB';
+            if (appState.factoryName === undefined || appState.factoryName === null) appState.factoryName = '';
+            if (appState.lineName === undefined || appState.lineName === null) appState.lineName = '';
             if (!appState.pcbPerSheet || appState.pcbPerSheet < 1) appState.pcbPerSheet = 1;
-            if (appState.allowancePct === undefined || appState.allowancePct === null) appState.allowancePct = 0;
+            if (appState.allowancePct === undefined || appState.allowancePct === null) appState.allowancePct = 5;
             if (!Array.isArray(appState.operations)) appState.operations = [];
 
-            // Normalize operations
             appState.operations.forEach(op => {
                 op.calcMode = normalizeCalcMode(op.calcMode);
             });
 
             syncHeaderInputs();
+            updateLineModeTerminologyUI();
             renderAll();
             updateSavedArchiveBadge();
         };
+
+        // Switch between Product / Pallet mode and PCB / Sheet mode
+        function setLineModeType(mode) {
+            appState.lineModeType = mode === 'PCB' ? 'PCB' : 'General';
+            updateLineModeTerminologyUI();
+            renderAll();
+            saveStateToLocalStorage();
+            const terms = getTerms();
+            showToast(`تم ضبط النظام على: ${terms.ratioBadge}`);
+        }
+
+        function renderCategoryPillsInModal() {
+            const terms = getTerms();
+            const groupEl = document.getElementById('opCategoryGroup');
+            const hiddenInput = document.getElementById('newOpCategory');
+            if (!groupEl || !hiddenInput) return;
+
+            let currentCat = hiddenInput.value;
+            if (!terms.categories.includes(currentCat)) {
+                currentCat = terms.categories[0];
+                hiddenInput.value = currentCat;
+            }
+
+            groupEl.innerHTML = terms.categories.map(cat => {
+                const isActive = cat === currentCat;
+                const cls = isActive
+                    ? 'op-cat-btn bg-blue-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs border border-blue-600 shadow-sm transition'
+                    : 'op-cat-btn bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-200 transition';
+                return `<button type="button" onclick="setFormPill('newOpCategory', '${cat}')" data-val="${cat}" class="${cls}">${cat}</button>`;
+            }).join('');
+        }
+
+        function updateLineModeTerminologyUI() {
+            const terms = getTerms();
+            const isPCB = appState.lineModeType === 'PCB';
+
+            const btnGen = document.getElementById('modeBtnGeneral');
+            const btnPcb = document.getElementById('modeBtnPCB');
+            if (btnGen && btnPcb) {
+                if (!isPCB) {
+                    btnGen.className = 'py-2 px-2.5 rounded-lg text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm mono-num';
+                    btnPcb.className = 'py-2 px-2.5 rounded-lg text-xs font-extrabold transition flex items-center justify-center gap-1.5 text-slate-700 hover:bg-slate-100 mono-num';
+                } else {
+                    btnPcb.className = 'py-2 px-2.5 rounded-lg text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm mono-num';
+                    btnGen.className = 'py-2 px-2.5 rounded-lg text-xs font-extrabold transition flex items-center justify-center gap-1.5 text-slate-700 hover:bg-slate-100 mono-num';
+                }
+            }
+
+            document.getElementById('headerLineModeBadge').textContent = terms.ratioBadge;
+            document.getElementById('lblBatchCountTitle').textContent = terms.ratioTitle;
+            document.getElementById('lblBatchCountBadge').textContent = terms.ratioBadge;
+            document.getElementById('lblStdRateUnit').textContent = terms.rateUnit;
+            document.getElementById('stripRateUnit').textContent = terms.rateUnit;
+            document.getElementById('lblCard4Title').textContent = `إجمالي أزمنة العمليات (${terms.perUnitMin})`;
+            document.getElementById('kpiRateUnitText').textContent = terms.rateUnit;
+            document.getElementById('compUnit1').textContent = terms.rateUnit;
+            document.getElementById('compUnit2').textContent = terms.rateUnit;
+
+            // Update Hub Button 1 description dynamically
+            const catListStr = terms.categories.join(' / ');
+            document.getElementById('hubBtn1Desc').textContent =
+                `إضافة عملية جديدة (${catListStr})، وتحديد وحدة التشغيل (${terms.singleCode} / ${terms.multiCode})، وOnline/Offline، وطريقة الحساب.`;
+
+            // Update Modal 1 Category Pills & Work Unit Buttons
+            renderCategoryPillsInModal();
+            document.getElementById('lblModalWorkUnitTitle').textContent = `3. وحدة التشغيل (${terms.singleCode} / ${terms.multiCode})`;
+            document.getElementById('btnUnitSingle').textContent = terms.singleLabel;
+            document.getElementById('btnUnitMulti').textContent = terms.multiLabel;
+            document.getElementById('sheetDivisionHintText').innerHTML =
+                `بما أن العملية تتم على <strong>${terms.multiCode}</strong>، سيتم قسمة متوسط الوقت تلقائياً على عدد الوحدات (<strong id="hintPcbCount">${appState.pcbPerSheet || 1}</strong> ${terms.ratioBadge}).`;
+        }
 
         // ==========================================
         // WORKSPACE POPUP MODALS CONTROLLER (4 Main Modals)
@@ -1418,35 +1538,41 @@
         }
 
         function syncHeaderInputs() {
+            document.getElementById('measurerName').value = appState.measurerName || '';
+            document.getElementById('measurerId').value = appState.measurerId || '';
             document.getElementById('productName').value = appState.productName || '';
             document.getElementById('productCode').value = (appState.productCode || '').toUpperCase();
             document.getElementById('productFamily').value = appState.productFamily || '';
             document.getElementById('productGroup').value = appState.productGroup || '';
             document.getElementById('pcbPerSheet').value = appState.pcbPerSheet || 1;
-            document.getElementById('factoryName').value = appState.factoryName || '1 PCB';
-            document.getElementById('lineName').value = appState.lineName || '1 PCB';
+            document.getElementById('factoryName').value = appState.factoryName || '';
+            document.getElementById('lineName').value = appState.lineName || '';
             document.getElementById('studyDate').value = appState.studyDate || getTodayISO();
             document.getElementById('routingLaborMin').value = appState.routingLaborMin || 0;
             document.getElementById('routingMachineMin').value = appState.routingMachineMin || 0;
-            document.getElementById('allowancePct').value = appState.allowancePct ?? 0;
-            document.getElementById('hintPcbCount').textContent = appState.pcbPerSheet || 1;
+            document.getElementById('allowancePct').value = appState.allowancePct ?? 5;
+            const hintEl = document.getElementById('hintPcbCount');
+            if (hintEl) hintEl.textContent = appState.pcbPerSheet || 1;
         }
 
         function handleHeaderChange() {
             const codeInput = document.getElementById('productCode');
+            appState.measurerName = document.getElementById('measurerName').value.trim();
+            appState.measurerId = document.getElementById('measurerId').value.trim();
             appState.productName = document.getElementById('productName').value.trim();
             appState.productCode = codeInput.value.trim().toUpperCase();
             appState.productFamily = document.getElementById('productFamily').value.trim();
             appState.productGroup = document.getElementById('productGroup').value.trim();
             appState.pcbPerSheet = Math.max(1, parseInt(document.getElementById('pcbPerSheet').value, 10) || 1);
-            appState.factoryName = document.getElementById('factoryName').value.trim() || '1 PCB';
-            appState.lineName = document.getElementById('lineName').value.trim() || '1 PCB';
+            appState.factoryName = document.getElementById('factoryName').value.trim();
+            appState.lineName = document.getElementById('lineName').value.trim();
             appState.studyDate = document.getElementById('studyDate').value || getTodayISO();
             appState.routingLaborMin = parseFloat(document.getElementById('routingLaborMin').value) || 0;
             appState.routingMachineMin = parseFloat(document.getElementById('routingMachineMin').value) || 0;
             appState.allowancePct = parseFloat(document.getElementById('allowancePct').value) || 0;
 
-            document.getElementById('hintPcbCount').textContent = appState.pcbPerSheet;
+            const hintEl = document.getElementById('hintPcbCount');
+            if (hintEl) hintEl.textContent = appState.pcbPerSheet;
 
             renderAll();
             saveStateToLocalStorage();
@@ -1457,23 +1583,17 @@
             document.getElementById(inputId).value = value;
 
             if (inputId === 'newOpCategory') {
-                document.querySelectorAll('.op-cat-btn').forEach(btn => {
-                    if (btn.dataset.val === value) {
-                        btn.className = 'op-cat-btn bg-blue-600 text-white font-bold py-2 px-2 rounded-xl text-xs border border-blue-600 shadow-sm transition';
-                    } else {
-                        btn.className = 'op-cat-btn bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2 px-2 rounded-xl text-xs border border-slate-200 transition';
-                    }
-                });
+                renderCategoryPillsInModal();
             } else if (inputId === 'newOpWorkUnit') {
                 document.querySelectorAll('.op-unit-btn').forEach(btn => {
                     if (btn.dataset.val === value) {
-                        btn.className = 'op-unit-btn bg-indigo-600 text-white font-extrabold py-1.5 rounded-lg text-xs shadow-sm transition mono-num';
+                        btn.className = 'op-unit-btn bg-indigo-600 text-white font-extrabold py-2 rounded-lg text-xs shadow-sm transition mono-num';
                     } else {
-                        btn.className = 'op-unit-btn text-slate-700 font-extrabold py-1.5 rounded-lg text-xs transition mono-num';
+                        btn.className = 'op-unit-btn text-slate-700 font-extrabold py-2 rounded-lg text-xs transition mono-num';
                     }
                 });
                 const hint = document.getElementById('sheetDivisionHint');
-                if (value === 'Sheet') {
+                if (value === 'Multi') {
                     hint.classList.remove('hidden');
                 } else {
                     hint.classList.add('hidden');
@@ -1482,29 +1602,26 @@
                 document.querySelectorAll('.op-mode-btn').forEach(btn => {
                     if (btn.dataset.val === value) {
                         const activeColor = value === 'Online' ? 'bg-emerald-600' : 'bg-purple-600';
-                        btn.className = `op-mode-btn ${activeColor} text-white font-extrabold py-1.5 rounded-lg text-xs shadow-sm transition mono-num`;
+                        btn.className = `op-mode-btn ${activeColor} text-white font-extrabold py-2 rounded-lg text-xs shadow-sm transition mono-num`;
                     } else {
-                        btn.className = 'op-mode-btn text-slate-700 font-extrabold py-1.5 rounded-lg text-xs transition mono-num';
+                        btn.className = 'op-mode-btn text-slate-700 font-extrabold py-2 rounded-lg text-xs transition mono-num';
                     }
                 });
             } else if (inputId === 'newOpCalcMode') {
                 document.querySelectorAll('.op-calc-btn').forEach(btn => {
                     if (btn.dataset.val === value) {
                         const activeColor = value === 'Operation' ? 'bg-teal-600' : 'bg-amber-600';
-                        btn.className = `op-calc-btn ${activeColor} text-white font-extrabold py-2 px-2 rounded-lg text-xs shadow-sm transition flex flex-col items-center justify-center text-center`;
+                        btn.className = `op-calc-btn ${activeColor} text-white font-extrabold py-2.5 px-3 rounded-lg text-xs shadow-sm transition flex flex-col items-center justify-center text-center`;
                     } else {
-                        btn.className = 'op-calc-btn text-slate-700 font-extrabold py-2 px-2 rounded-lg text-xs transition flex flex-col items-center justify-center text-center';
+                        btn.className = 'op-calc-btn text-slate-700 font-extrabold py-2.5 px-3 rounded-lg text-xs transition flex flex-col items-center justify-center text-center';
                     }
                 });
             }
         }
 
         // ==========================================
-        // CORE ENGINEERING CALCULATIONS (EXACT USER SPECIFICATION)
+        // CORE ENGINEERING CALCULATIONS
         // ==========================================
-        // 1. Standard Routing Metrics:
-        //    - Standard Hourly Rate (UPH) = 60 / Machine Routing
-        //    - Standard Line Headcount (HC) = Labor Routing / Machine Routing
         function calculateRoutingMetrics() {
             const laborRoutingMin = Math.max(0, Number(appState.routingLaborMin) || 0);
             const machineRoutingMin = Math.max(0, Number(appState.routingMachineMin) || 0);
@@ -1520,29 +1637,24 @@
             };
         }
 
-        // 2. Operation Time Calculation Rules:
-        //    - Rule A: If workUnit === 'Sheet', divide average time by pcbPerSheet.
-        //    - Rule B:
-        //      * If calcMode === 'Operation': IGNORE number of workers (HC) and take the average time (hcDivisor = 1).
-        //      * If calcMode === 'Labor': DIVIDE by number of workers (hcDivisor = op.hc).
         function calculateOperationMetrics(op) {
             const validTrialsSec = (op.trials || []).filter(v => v !== null && v !== '' && !isNaN(v) && Number(v) > 0).map(Number);
             const trialsCount = validTrialsSec.length;
 
-            // Average Measured Time for the Unit (Sheet or PCB)
             const avgUnitSec = trialsCount > 0
                 ? validTrialsSec.reduce((sum, val) => sum + val, 0) / trialsCount
                 : 0;
             const avgUnitMin = avgUnitSec / 60;
 
-            // Rule A: Sheet division by PCB / Sheet
-            const pcbPerSheet = Math.max(1, Number(appState.pcbPerSheet) || 1);
-            const sheetDivisor = op.workUnit === 'Sheet' ? pcbPerSheet : 1;
+            // Rule A: Multi-unit division (Pallet or Sheet)
+            const unitsPerBatch = Math.max(1, Number(appState.pcbPerSheet) || 1);
+            const multiUnit = isMultiUnitOp(op);
+            const sheetDivisor = multiUnit ? unitsPerBatch : 1;
 
             const timePerPcbSec = avgUnitSec / sheetDivisor;
             const timePerPcbMin = avgUnitMin / sheetDivisor;
 
-            // Allowance factor (0% by default so raw = standard unless user adds allowance)
+            // Allowance factor
             const allowanceFactor = 1 + ((Number(appState.allowancePct) || 0) / 100);
             const allowedTimePerPcbMin = timePerPcbMin * allowanceFactor;
             const allowedTimePerPcbSec = timePerPcbSec * allowanceFactor;
@@ -1557,13 +1669,13 @@
             const netCyclePerPcbMin = allowedTimePerPcbMin / hcDivisor;
             const netCyclePerPcbSec = allowedTimePerPcbSec / hcDivisor;
 
-            // Operation UPH = 60 / netCyclePerPcbMin
             const uph = netCyclePerPcbMin > 0 ? (60 / netCyclePerPcbMin) : 0;
 
             return {
                 trialsCount,
                 avgUnitSec,
                 avgUnitMin,
+                multiUnit,
                 sheetDivisor,
                 timePerPcbSec,
                 timePerPcbMin,
@@ -1582,19 +1694,24 @@
         // RENDER ALL UI SECTIONS
         // ==========================================
         function renderAll() {
-            // 0. Update Product Summary Badges Bar
+            const terms = getTerms();
+
+            // 0. Update Product & Measurer Summary Badges Bar
+            const mName = appState.measurerName || 'غير محدد';
+            const mId = appState.measurerId || '-';
+            document.getElementById('summaryBadgeMeasurer').textContent = `القائم بالقياس: ${mName} (ID: ${mId})`;
             document.getElementById('summaryBadgeModel').textContent = `الموديل: ${appState.productName || 'غير محدد'}`;
             document.getElementById('summaryBadgeCode').textContent = `Code: ${appState.productCode || '-'}`;
             document.getElementById('summaryBadgeFamily').textContent = `Family: ${appState.productFamily || '-'}`;
             document.getElementById('summaryBadgeGroup').textContent = `Group: ${appState.productGroup || '-'}`;
-            document.getElementById('summaryBadgeSheet').textContent = `${appState.pcbPerSheet || 1} PCB / Sheet`;
-            document.getElementById('summaryBadgePlant').textContent = `${appState.factoryName || '1 PCB'} | ${appState.lineName || '1 PCB'}`;
+            document.getElementById('summaryBadgeSheet').textContent = `${appState.pcbPerSheet || 1} ${terms.ratioBadge}`;
+            document.getElementById('summaryBadgePlant').textContent = `المصنع: ${appState.factoryName || '-'} | الخط: ${appState.lineName || '-'}`;
 
-            // 1. Update Standard Routing Extracted Metrics (Hourly Rate = 60/Machine & Standard HC = Labor/Machine)
+            // 1. Update Standard Routing Extracted Metrics
             const routing = calculateRoutingMetrics();
             document.getElementById('stdHourlyRateDisplay').textContent = routing.stdHourlyRate > 0 ? Math.round(routing.stdHourlyRate) : '0';
             document.getElementById('stdHourlyFormulaText').textContent = routing.machineRoutingMin > 0
-                ? `60 / ${routing.machineRoutingMin.toFixed(3)} = ${routing.stdHourlyRate.toFixed(1)} PCB/Hr`
+                ? `60 / ${routing.machineRoutingMin.toFixed(3)} = ${routing.stdHourlyRate.toFixed(1)} ${terms.rateUnit}`
                 : `أدخل Machine Routing لحساب المعدل`;
 
             document.getElementById('stdLineHCDisplay').textContent = routing.stdLineHC > 0 ? routing.stdLineHC.toFixed(2) : '0.00';
@@ -1610,6 +1727,7 @@
         }
 
         function renderStopwatchStudioModal() {
+            const terms = getTerms();
             const modalSelect = document.getElementById('modalActiveOpSelect');
             const studioBadge = document.getElementById('studioNextTrialBadge');
             const metaBar = document.getElementById('swActiveOpMetaBar');
@@ -1639,14 +1757,15 @@
                 const sel = op.id === Number(appState.activeOperationId) ? 'selected' : '';
                 const namePart = op.name ? ` - ${op.name}` : '';
                 const descPart = op.description ? ` (${op.description})` : '';
-                const label = `${op.category}${namePart}${descPart}`;
-                return `<option value="${op.id}" ${sel}>[${idx + 1}] ${label} [${op.workUnit} | ${op.lineMode}]</option>`;
+                const unitLabel = getOpUnitDisplay(op);
+                return `<option value="${op.id}" ${sel}>[${idx + 1}] ${op.category}${namePart}${descPart} [${unitLabel} | ${op.lineMode}]</option>`;
             }).join('');
 
             const activeOp = appState.operations.find(o => o.id === Number(appState.activeOperationId));
             if (!activeOp) return;
 
             const m = calculateOperationMetrics(activeOp);
+            const unitLabel = getOpUnitDisplay(activeOp);
             const nextTrialNum = (activeOp.trials || []).length + 1;
             studioBadge.textContent = `T${nextTrialNum}`;
             trialsCountText.textContent = m.trialsCount;
@@ -1655,7 +1774,7 @@
                 <span class="px-2.5 py-0.5 rounded-lg border font-extrabold ${getCategoryBadgeStyle(activeOp.category)}">${activeOp.category}</span>
                 ${activeOp.name ? `<span class="bg-white border border-slate-300 text-slate-800 px-2.5 py-0.5 rounded-lg font-bold">${activeOp.name}</span>` : ''}
                 ${activeOp.description ? `<span class="bg-indigo-50 border border-indigo-200 text-indigo-900 px-2.5 py-0.5 rounded-lg font-bold">${activeOp.description}</span>` : ''}
-                <span class="bg-slate-800 text-white px-2.5 py-0.5 rounded-lg font-extrabold mono-num">${activeOp.workUnit === 'Sheet' ? `Sheet (÷${appState.pcbPerSheet} PCB)` : '1 PCB مباشر'}</span>
+                <span class="bg-slate-800 text-white px-2.5 py-0.5 rounded-lg font-extrabold mono-num">${m.multiUnit ? `${terms.multiCode} (÷${appState.pcbPerSheet} ${terms.singleCode})` : `1 ${terms.singleCode} مباشر`}</span>
                 <span class="${activeOp.lineMode === 'Online' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-purple-100 text-purple-800 border-purple-300'} border px-2.5 py-0.5 rounded-lg font-extrabold mono-num">${activeOp.lineMode}</span>
                 <span class="${m.calcMode === 'Labor' ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-teal-100 text-teal-900 border-teal-300'} border px-2.5 py-0.5 rounded-lg font-extrabold">
                     ${m.calcMode === 'Labor' ? `حساب Labor (÷${m.hc} HC)` : `حساب Operation (يتجاهل ${m.hc} HC)`}
@@ -1684,12 +1803,12 @@
 
             liveMetricsBar.innerHTML = `
                 <div class="bg-white rounded-xl p-2.5 border border-slate-200">
-                    <span class="text-[10px] text-slate-500 block">متوسط القراءات (${activeOp.workUnit})</span>
+                    <span class="text-[10px] text-slate-500 block">متوسط القراءات (${unitLabel})</span>
                     <strong class="text-sm font-black text-slate-900 mono-num">${m.avgUnitMin.toFixed(3)} Min</strong>
                     <span class="text-[10px] text-slate-400 mono-num block">(${m.avgUnitSec.toFixed(2)} ثانية)</span>
                 </div>
                 <div class="bg-indigo-50/70 rounded-xl p-2.5 border border-indigo-200">
-                    <span class="text-[10px] text-indigo-800 font-bold block">زمن 1 PCB ${activeOp.workUnit === 'Sheet' ? `(÷${m.sheetDivisor})` : ''}</span>
+                    <span class="text-[10px] text-indigo-800 font-bold block">زمن 1 ${terms.singleCode} ${m.multiUnit ? `(÷${m.sheetDivisor})` : ''}</span>
                     <strong class="text-sm font-black text-indigo-950 mono-num">${m.timePerPcbMin.toFixed(4)} Min</strong>
                     <span class="text-[10px] text-indigo-600 mono-num block">(${m.timePerPcbSec.toFixed(2)} ثانية)</span>
                 </div>
@@ -1699,9 +1818,9 @@
                     <span class="text-[10px] text-teal-700 block">العمالة المسجلة: ${m.hc} HC</span>
                 </div>
                 <div class="bg-emerald-50 rounded-xl p-2.5 border border-emerald-300">
-                    <span class="text-[10px] text-emerald-800 font-bold block">الزمن النهائي للعملية</span>
+                    <span class="text-[10px] text-emerald-800 font-bold block">الزمن النهائي للعملية بالدقائق</span>
                     <strong class="text-sm font-black text-emerald-950 mono-num">${m.netCyclePerPcbMin.toFixed(4)} Min</strong>
-                    <span class="text-[10px] text-emerald-700 font-bold mono-num block">${Math.round(m.uph)} PCB/Hr</span>
+                    <span class="text-[10px] text-emerald-700 font-bold mono-num block">${Math.round(m.uph)} ${terms.rateUnit}</span>
                 </div>
             `;
         }
@@ -1714,15 +1833,18 @@
         function getCategoryBadgeStyle(category) {
             switch (category) {
                 case 'Assembly': return 'bg-blue-100 text-blue-800 border-blue-200';
+                case 'Manufacture': return 'bg-cyan-100 text-cyan-900 border-cyan-200';
                 case 'Retouch': return 'bg-amber-100 text-amber-800 border-amber-200';
                 case 'Test': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
                 case 'Programming': return 'bg-purple-100 text-purple-800 border-purple-200';
+                case 'Packing': return 'bg-teal-100 text-teal-900 border-teal-200';
                 case 'Adjust': return 'bg-rose-100 text-rose-800 border-rose-200';
                 default: return 'bg-slate-100 text-slate-800 border-slate-200';
             }
         }
 
         function renderOperationsList() {
+            const terms = getTerms();
             const container = document.getElementById('operationsListContainer');
 
             if (appState.operations.length === 0) {
@@ -1733,28 +1855,33 @@
                         </div>
                         <h3 class="font-extrabold text-slate-800 text-base mb-1">لا توجد عمليات مسجلة حالياً</h3>
                         <p class="text-xs text-slate-500 max-w-md mx-auto mb-4">
-                            قم بإضافة عمليات الخط من نموذج <strong>"إضافة عملية جديدة"</strong> (حدد نوع العملية، وهل تعمل على PCB أم Sheet، وOnline أم Offline، وهل القياس للـ <strong>Operation</strong> أم للـ <strong>Labor</strong>) ثم ابدأ بتسجيل القراءات.
+                            قم بإضافة عمليات الخط من نموذج <strong>"إضافة عملية جديدة"</strong> (حدد نوع العملية، وهل تعمل على ${terms.singleCode} أم ${terms.multiCode}، وOnline أم Offline، وهل القياس للـ <strong>Operation</strong> أم للـ <strong>Labor</strong>) ثم ابدأ بتسجيل القراءات.
                         </p>
                     </div>
                 `;
                 return;
             }
 
-            // Find bottleneck across operations
             let maxNetMin = 0;
             appState.operations.forEach(op => {
                 const m = calculateOperationMetrics(op);
                 if (m.netCyclePerPcbMin > maxNetMin) maxNetMin = m.netCyclePerPcbMin;
             });
 
+            // Build category options including current operation category
             container.innerHTML = appState.operations.map((op, idx) => {
                 const m = calculateOperationMetrics(op);
+                const unitLabel = getOpUnitDisplay(op);
                 const isSelected = op.id === Number(appState.activeOperationId);
                 const isBottleneck = maxNetMin > 0 && Math.abs(m.netCyclePerPcbMin - maxNetMin) < 0.00001;
 
-                // Render Unlimited Trial Chips
+                const catOptionsList = [...new Set([...terms.categories, op.category])];
+                const catSelectOptionsHtml = catOptionsList.map(c =>
+                    `<option value="${c}" ${op.category === c ? 'selected' : ''}>${c}</option>`
+                ).join('');
+
                 const trialsChipsHtml = (op.trials || []).length === 0
-                    ? `<span class="text-xs text-slate-400 italic py-1">لا توجد قراءات مسجلة بعد — اضغط "تسجيل قراءة" من ساعة الإيقاف أو أضف قراءة يدوياً.</span>`
+                    ? `<span class="text-xs text-slate-400 italic py-1">لا توجد قراءات مسجلة بعد — اضغط "قياس" لفتح ساعة الإيقاف أو أضف قراءة يدوياً.</span>`
                     : (op.trials || []).map((tSec, tIdx) => {
                         const tMin = (Number(tSec) / 60).toFixed(3);
                         return `
@@ -1785,11 +1912,7 @@
                                 <!-- Category Selector Inline -->
                                 <select onclick="event.stopPropagation()" onchange="updateOpField(${op.id}, 'category', this.value)"
                                     class="text-xs font-extrabold px-2.5 py-1 rounded-lg border ${getCategoryBadgeStyle(op.category)} outline-none">
-                                    <option value="Assembly" ${op.category === 'Assembly' ? 'selected' : ''}>Assembly</option>
-                                    <option value="Retouch" ${op.category === 'Retouch' ? 'selected' : ''}>Retouch</option>
-                                    <option value="Test" ${op.category === 'Test' ? 'selected' : ''}>Test</option>
-                                    <option value="Programming" ${op.category === 'Programming' ? 'selected' : ''}>Programming</option>
-                                    <option value="Adjust" ${op.category === 'Adjust' ? 'selected' : ''}>Adjust</option>
+                                    ${catSelectOptionsHtml}
                                 </select>
 
                                 <!-- Custom Station Name Inline Input -->
@@ -1798,11 +1921,11 @@
                                     onchange="updateOpField(${op.id}, 'name', this.value)"
                                     class="bg-white border border-slate-200 focus:border-blue-500 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-bold text-slate-800 outline-none w-28 sm:w-36">
 
-                                <!-- PCB vs Sheet Selector Inline -->
+                                <!-- Single vs Multi Unit Selector Inline -->
                                 <select onclick="event.stopPropagation()" onchange="updateOpField(${op.id}, 'workUnit', this.value)"
-                                    class="text-xs font-extrabold px-2 py-1 rounded-lg border outline-none mono-num ${op.workUnit === 'Sheet' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-200 text-slate-800 border-slate-300'}">
-                                    <option value="PCB" ${op.workUnit === 'PCB' ? 'selected' : ''}>PCB</option>
-                                    <option value="Sheet" ${op.workUnit === 'Sheet' ? 'selected' : ''}>Sheet (÷${appState.pcbPerSheet})</option>
+                                    class="text-xs font-extrabold px-2 py-1 rounded-lg border outline-none mono-num ${m.multiUnit ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-200 text-slate-800 border-slate-300'}">
+                                    <option value="Single" ${!m.multiUnit ? 'selected' : ''}>${terms.singleCode}</option>
+                                    <option value="Multi" ${m.multiUnit ? 'selected' : ''}>${terms.multiCode} (÷${appState.pcbPerSheet})</option>
                                 </select>
 
                                 <!-- Online vs Offline Selector Inline -->
@@ -1819,9 +1942,7 @@
                                     <option value="Machine" ${op.resourceType === 'Machine' ? 'selected' : ''}>Machine</option>
                                 </select>
 
-                                <!-- Measurement Mode Selector Inline:
-                                     - Operation: يتجاهل عدد العاملين ويقيس متوسط الأوقات
-                                     - Labor: يقسم على عدد العاملين (÷ HC) -->
+                                <!-- Measurement Mode Selector Inline -->
                                 <select onclick="event.stopPropagation()" onchange="updateOpField(${op.id}, 'calcMode', this.value)"
                                     title="طريقة القياس: Operation يتجاهل عدد العاملين | Labor يقسم على عدد العاملين"
                                     class="text-xs font-extrabold px-2.5 py-1 rounded-lg border outline-none ${m.calcMode === 'Labor' ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-teal-100 text-teal-900 border-teal-300'}">
@@ -1831,14 +1952,12 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <!-- Quick Open Stopwatch Button for this Operation -->
                                 <button type="button" onclick="event.stopPropagation(); openStopwatchForOperation(${op.id})"
                                     class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition no-print" title="فتح ساعة القياس لهذه العملية">
                                     <i class="fa-solid fa-stopwatch"></i>
                                     <span>قياس</span>
                                 </button>
 
-                                <!-- HC Input (Always counted in Actual Line Headcount!) -->
                                 <div onclick="event.stopPropagation()" class="flex items-stretch rounded-lg border border-slate-300 bg-white overflow-hidden" title="عدد العمالة بالعملية (يُجمع دائماً ضمن عدد العمالة الفعلي للخط)">
                                     <input type="number" min="1" step="1" value="${op.hc || 1}"
                                         onchange="updateOpField(${op.id}, 'hc', this.value)"
@@ -1855,7 +1974,6 @@
 
                         <!-- Card Body -->
                         <div class="p-4 space-y-3">
-                            <!-- Inline Editable Operation Description Bar -->
                             <div onclick="event.stopPropagation()" class="flex items-center gap-2 bg-indigo-50/50 border border-indigo-200/80 rounded-xl px-3 py-1.5">
                                 <span class="text-xs font-extrabold text-indigo-900 shrink-0 flex items-center gap-1.5">
                                     <i class="fa-solid fa-file-lines text-indigo-600"></i>
@@ -1870,7 +1988,7 @@
                                 <div class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
                                     <i class="fa-solid fa-stopwatch text-blue-600"></i>
                                     <span>القراءات المسجلة (Trials: <strong class="mono-num text-slate-900">${m.trialsCount}</strong>):</span>
-                                    ${op.workUnit === 'Sheet' ? `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded-full font-extrabold">Sheet: يُقسم المتوسط على ${appState.pcbPerSheet} PCB</span>` : ''}
+                                    ${m.multiUnit ? `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded-full font-extrabold">${terms.multiCode}: يُقسم المتوسط على ${appState.pcbPerSheet} ${terms.singleCode}</span>` : ''}
                                 </div>
 
                                 <!-- Manual Trial Input Box -->
@@ -1897,7 +2015,7 @@
                             <!-- Calculated Results Bar -->
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 border-t border-slate-100 text-xs">
                                 <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-200/60">
-                                    <span class="text-[11px] text-slate-500 block">متوسط القراءات (${op.workUnit})</span>
+                                    <span class="text-[11px] text-slate-500 block">متوسط القراءات (${unitLabel})</span>
                                     <div class="flex items-baseline justify-between mt-0.5">
                                         <strong class="text-slate-900 font-extrabold mono-num text-sm">${m.avgUnitMin.toFixed(3)} Min</strong>
                                         <span class="text-[11px] text-slate-400 mono-num">(${m.avgUnitSec.toFixed(2)}s)</span>
@@ -1906,7 +2024,7 @@
 
                                 <div class="bg-indigo-50/60 rounded-xl p-2.5 border border-indigo-200/70">
                                     <span class="text-[11px] text-indigo-800 font-semibold block">
-                                        متوسط زمن 1 PCB ${op.workUnit === 'Sheet' ? `(÷${m.sheetDivisor} PCB)` : '(مباشر)'}
+                                        متوسط زمن 1 ${terms.singleCode} ${m.multiUnit ? `(÷${m.sheetDivisor})` : '(مباشر)'}
                                     </span>
                                     <div class="flex items-baseline justify-between mt-0.5">
                                         <strong class="text-indigo-950 font-extrabold mono-num text-sm">${m.timePerPcbMin.toFixed(4)} Min</strong>
@@ -1926,15 +2044,15 @@
 
                                 <div class="${isBottleneck ? 'bg-rose-50 border-rose-400 ring-1 ring-rose-300' : 'bg-amber-50/60 border-amber-200/80'} rounded-xl p-2.5 border">
                                     <span class="text-[11px] ${isBottleneck ? 'text-rose-800 font-black' : 'text-amber-900 font-semibold'} block flex items-center justify-between">
-                                        <span>الزمن النهائي للعملية</span>
+                                        <span>الزمن النهائي للعملية بالدقائق</span>
                                         ${isBottleneck ? '<span class="bg-rose-600 text-white text-[9px] px-1.5 py-0.2 rounded font-black">BOTTLENECK</span>' : ''}
                                     </span>
                                     <div class="flex items-baseline justify-between mt-0.5">
                                         <strong class="${isBottleneck ? 'text-rose-700' : 'text-amber-950'} font-extrabold mono-num text-sm">${m.netCyclePerPcbMin.toFixed(4)} Min</strong>
-                                        <span class="text-[11px] font-bold text-slate-600 mono-num">${Math.round(m.uph)} PCB/Hr</span>
+                                        <span class="text-[11px] font-bold text-slate-600 mono-num">${Math.round(m.uph)} ${terms.rateUnit}</span>
                                     </div>
                                     <div class="mt-0.5 text-[10px] font-bold text-slate-500 mono-num">
-                                        (${m.netCyclePerPcbSec.toFixed(2)} ثانية / PCB)
+                                        (${m.netCyclePerPcbSec.toFixed(2)} ثانية / ${terms.singleCode})
                                     </div>
                                 </div>
                             </div>
@@ -1948,6 +2066,7 @@
         // RENDER KPIs, BOTTLENECK, NEW HOURLY RATE, LINE BALANCE % & CHARTS
         // ==========================================
         function renderKPIsAndBalancingChart() {
+            const terms = getTerms();
             const routing = calculateRoutingMetrics();
 
             let totalNetTimeMin = 0;
@@ -1960,12 +2079,10 @@
 
             let maxNetCycleMin = 0;
             let bottleneckName = '-';
-            let validOpsCount = 0;
 
             const opMetricsList = appState.operations.map((op, index) => {
                 const m = calculateOperationMetrics(op);
 
-                // Rule: Actual Line Headcount is the sum of all registered HC (both Online and Offline)
                 actualTotalHC += m.hc;
                 if (op.lineMode === 'Offline') {
                     offlineHC += m.hc;
@@ -1977,10 +2094,6 @@
 
                 totalNetTimeMin += m.netCyclePerPcbMin;
 
-                if (m.netCyclePerPcbMin > 0) {
-                    validOpsCount++;
-                }
-
                 if (m.netCyclePerPcbMin > maxNetCycleMin) {
                     maxNetCycleMin = m.netCyclePerPcbMin;
                     const descLabel = op.description ? ` (${op.description})` : '';
@@ -1990,16 +2103,12 @@
                 return { op, metrics: m, index };
             });
 
-            // Count total recorded trials across all operations
             const totalTrialsAllOps = appState.operations.reduce((acc, op) => acc + ((op.trials || []).length), 0);
 
-            // Update Header Actual HC quick badge
             document.getElementById('headerActualHCCompare').textContent = `${actualTotalHC} عامل فعلي (${onlineHC} Online + ${offlineHC} Offline)`;
 
-            // 1. Bottleneck & New Actual Hourly Rate (60 / Bottleneck Min)
             const actualHourlyRate = maxNetCycleMin > 0 ? (60 / maxNetCycleMin) : 0;
 
-            // Line Balance % = (Sum of all operations' netCyclePerPcbMin / (N * Bottleneck Time)) * 100
             const opsCountForBalance = appState.operations.length;
             const lineBalancePct = (opsCountForBalance > 0 && maxNetCycleMin > 0)
                 ? ((totalNetTimeMin / (opsCountForBalance * maxNetCycleMin)) * 100)
@@ -2009,7 +2118,7 @@
             document.getElementById('hubBadgeOpCount1').textContent = `${appState.operations.length} عملية`;
             document.getElementById('hubBadgeTrialsCount').textContent = `${totalTrialsAllOps} قراءة`;
             document.getElementById('hubBadgeActualHC').textContent = `${actualTotalHC} عامل (${onlineHC} On / ${offlineHC} Off)`;
-            document.getElementById('hubBadgeAnalysisSummary').textContent = `${lineBalancePct.toFixed(1)}% | ${Math.round(actualHourlyRate)} PCB/Hr`;
+            document.getElementById('hubBadgeAnalysisSummary').textContent = `${lineBalancePct.toFixed(1)}% | ${Math.round(actualHourlyRate)} ${terms.rateUnit}`;
 
             document.getElementById('stripOpsCount').textContent = appState.operations.length;
             document.getElementById('stripHCCompare').textContent = `${actualTotalHC} / ${routing.stdLineHC.toFixed(2)}`;
@@ -2034,13 +2143,13 @@
                 rateVsRoutingBadge.className = rateDiff >= 0
                     ? 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 truncate'
                     : 'text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 truncate';
-                rateVsRoutingBadge.textContent = `مقارنة بالراوتينج (${Math.round(routing.stdHourlyRate)}): ${sign}${Math.round(rateDiff)} PCB/Hr`;
+                rateVsRoutingBadge.textContent = `مقارنة بالراوتينج (${Math.round(routing.stdHourlyRate)}): ${sign}${Math.round(rateDiff)} ${terms.rateUnit}`;
             } else {
                 rateVsRoutingBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 truncate';
-                rateVsRoutingBadge.textContent = `معدل الراوتينج القياسي: ${Math.round(routing.stdHourlyRate)} PCB/Hr`;
+                rateVsRoutingBadge.textContent = `معدل الراوتينج القياسي: ${Math.round(routing.stdHourlyRate)} ${terms.rateUnit}`;
             }
 
-            // 2. Actual Headcount vs Standard Routing HC (Labor / Machine)
+            // 2. Actual Headcount vs Standard Routing HC
             document.getElementById('kpiActualTotalHC').textContent = actualTotalHC;
             document.getElementById('kpiStdRoutingHC').textContent = routing.stdLineHC.toFixed(2);
             document.getElementById('kpiOnlineHC').textContent = onlineHC;
@@ -2093,7 +2202,7 @@
                 laborVarBadge.textContent = `أدخل Labor Routing للمقارنة`;
             }
 
-            // 5. Update Step 3 Analytical Comparison Cards
+            // 5. Update Analytical Comparison Cards
             document.getElementById('compStdUPH').textContent = Math.round(routing.stdHourlyRate);
             document.getElementById('compActualUPH').textContent = Math.round(actualHourlyRate);
             const uphDiffEl = document.getElementById('compUPHDiffText');
@@ -2103,7 +2212,7 @@
                 uphDiffEl.className = diff >= 0
                     ? 'mt-2 text-[11px] font-extrabold text-center py-1 rounded-lg bg-emerald-100 text-emerald-800'
                     : 'mt-2 text-[11px] font-extrabold text-center py-1 rounded-lg bg-rose-100 text-rose-800';
-                uphDiffEl.textContent = `الفرق: ${diff >= 0 ? '+' : ''}${Math.round(diff)} PCB/Hr (تحقيق ${pct}% من الراوتينج)`;
+                uphDiffEl.textContent = `الفرق: ${diff >= 0 ? '+' : ''}${Math.round(diff)} ${terms.rateUnit} (تحقيق ${pct}% من الراوتينج)`;
             } else {
                 uphDiffEl.className = 'mt-2 text-[11px] font-extrabold text-center py-1 rounded-lg bg-slate-100 text-slate-700';
                 uphDiffEl.textContent = 'سجّل العمليات والراوتينج لمقارنة معدل الساعة';
@@ -2130,7 +2239,7 @@
             }
 
             document.getElementById('chartTopSummaryBadge').textContent =
-                `Bottleneck: ${maxNetCycleMin.toFixed(3)} Min | Line Balance: ${lineBalancePct.toFixed(1)}% | New Rate: ${Math.round(actualHourlyRate)} PCB/Hr`;
+                `Bottleneck: ${maxNetCycleMin.toFixed(3)} Min | Line Balance: ${lineBalancePct.toFixed(1)}% | New Rate: ${Math.round(actualHourlyRate)} ${terms.rateUnit}`;
 
             // 6. Render Vertical Columns Chart & Horizontal Balancing Bars
             const vertChartEl = document.getElementById('verticalColumnsChartContainer');
@@ -2142,7 +2251,6 @@
                 return;
             }
 
-            // Vertical Columns Chart
             vertChartEl.innerHTML = opMetricsList.map(({ op, metrics, index }) => {
                 const heightPct = maxNetCycleMin > 0 ? Math.max(8, (metrics.netCyclePerPcbMin / maxNetCycleMin) * 100) : 8;
                 const balanceLoadPct = maxNetCycleMin > 0 ? ((metrics.netCyclePerPcbMin / maxNetCycleMin) * 100) : 0;
@@ -2175,11 +2283,11 @@
                 `;
             }).join('');
 
-            // Horizontal Detailed Bars
             horizChartEl.innerHTML = opMetricsList.map(({ op, metrics, index }) => {
                 const widthPct = maxNetCycleMin > 0 ? Math.max(4, (metrics.netCyclePerPcbMin / maxNetCycleMin) * 100) : 0;
                 const loadPct = maxNetCycleMin > 0 ? ((metrics.netCyclePerPcbMin / maxNetCycleMin) * 100) : 0;
                 const isBottleneck = maxNetCycleMin > 0 && Math.abs(metrics.netCyclePerPcbMin - maxNetCycleMin) < 0.00001;
+                const unitLabel = getOpUnitDisplay(op);
 
                 let barColor = op.resourceType === 'Machine' ? 'bg-amber-500' : 'bg-blue-600';
                 if (isBottleneck) barColor = 'bg-rose-600';
@@ -2193,13 +2301,13 @@
                                 <span>${op.name || ''}</span>
                                 ${op.description ? `<span class="text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.2 rounded-md text-[11px] font-bold">${op.description}</span>` : ''}
                                 <span class="text-[10px] text-slate-500 mono-num">
-                                    [${op.workUnit}${op.workUnit === 'Sheet' ? '÷' + metrics.sheetDivisor : ''} | ${op.lineMode} | HC:${metrics.hc} | ${metrics.calcMode === 'Labor' ? 'Labor ÷HC' : 'Operation تجاهل HC'}]
+                                    [${unitLabel}${metrics.multiUnit ? '÷' + metrics.sheetDivisor : ''} | ${op.lineMode} | HC:${metrics.hc} | ${metrics.calcMode === 'Labor' ? 'Labor ÷HC' : 'Operation تجاهل HC'}]
                                 </span>
                                 ${isBottleneck ? `<span class="bg-rose-600 text-white text-[10px] px-2 py-0.2 rounded-full font-extrabold">Bottleneck (100%)</span>` : ''}
                             </div>
                             <div class="flex items-center gap-3 mono-num">
                                 <span class="text-slate-500 text-[11px]">نسبة التوازن للمرحلة: <strong class="text-slate-800">${loadPct.toFixed(1)}%</strong></span>
-                                <span class="font-extrabold ${isBottleneck ? 'text-rose-600' : 'text-slate-900'}">${metrics.netCyclePerPcbMin.toFixed(4)} Min/PCB</span>
+                                <span class="font-extrabold ${isBottleneck ? 'text-rose-600' : 'text-slate-900'}">${metrics.netCyclePerPcbMin.toFixed(4)} ${terms.perUnitMin}</span>
                             </div>
                         </div>
                         <div class="w-full bg-slate-200/80 h-3 rounded-lg overflow-hidden p-0.5 border border-slate-200">
@@ -2214,10 +2322,11 @@
         // OPERATIONS & UNLIMITED TRIALS ACTIONS
         // ==========================================
         function addNewOperation(jumpToStopwatch = false) {
-            const category = document.getElementById('newOpCategory').value || 'Assembly';
+            const terms = getTerms();
+            const category = document.getElementById('newOpCategory').value || terms.categories[0];
             const name = document.getElementById('newOpName').value.trim();
             const description = document.getElementById('newOpDescription').value.trim();
-            const workUnit = document.getElementById('newOpWorkUnit').value || 'PCB';
+            const workUnit = document.getElementById('newOpWorkUnit').value || 'Single';
             const lineMode = document.getElementById('newOpLineMode').value || 'Online';
             const resourceType = document.getElementById('newOpResourceType').value || 'Labor';
             const hc = Math.max(1, parseInt(document.getElementById('newOpHC').value, 10) || 1);
@@ -2483,12 +2592,11 @@
                             <div class="font-bold text-slate-900 text-sm flex flex-wrap items-center gap-1.5">
                                 <span>${item.productName || 'بدون اسم موديل'}</span>
                                 <span class="text-xs text-cyan-800 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded mono-num">${item.productCode || 'بدون كود'}</span>
-                                <span class="text-xs text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">${item.productFamily || '-'}</span>
-                                <span class="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded">${item.productGroup || '-'}</span>
-                                <span class="text-xs text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded mono-num">${item.pcbPerSheet || 1} PCB/Sheet</span>
+                                <span class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">القائم بالقياس: ${item.measurerName || '-'} (${item.measurerId || '-'})</span>
+                                <span class="text-xs text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded mono-num">${item.pcbPerSheet || 1} ${item.lineModeType === 'PCB' ? 'PCB/Sheet' : 'Product/Pallet'}</span>
                             </div>
                             <div class="text-xs text-slate-500 mt-1">
-                                المصنع: <strong>${item.factoryName}</strong> | الخط: <strong>${item.lineName}</strong> | التاريخ: <span class="mono-num">${item.studyDate}</span>
+                                المصنع: <strong>${item.factoryName || '-'}</strong> | الخط: <strong>${item.lineName || '-'}</strong> | التاريخ: <span class="mono-num">${item.studyDate}</span>
                             </div>
                             <div class="text-[11px] text-slate-400 mt-0.5 mono-num">
                                 Routing: Labor ${item.routingLaborMin} Min / Machine ${item.routingMachineMin} Min | العمليات: ${(item.operations || []).length}
@@ -2519,11 +2627,12 @@
         function restoreStudyFromArchive(archiveId) {
             const found = getSavedArchive().find(x => x.archiveId === archiveId);
             if (!found) return;
-            appState = JSON.parse(JSON.stringify(found));
+            appState = { ...getDefaultEmptyState(), ...JSON.parse(JSON.stringify(found)) };
             appState.operations.forEach(op => {
                 op.calcMode = normalizeCalcMode(op.calcMode);
             });
             syncHeaderInputs();
+            updateLineModeTerminologyUI();
             renderAll();
             saveStateToLocalStorage();
             closeSavedModal();
@@ -2552,8 +2661,11 @@
 
         function executeResetStudy() {
             resetStopwatch();
+            const currentLineType = appState.lineModeType || 'General';
             appState = getDefaultEmptyState();
+            appState.lineModeType = currentLineType;
             syncHeaderInputs();
+            updateLineModeTerminologyUI();
             renderAll();
             saveStateToLocalStorage();
             closeConfirmModal();
@@ -2561,9 +2673,10 @@
         }
 
         // ==========================================
-        // EXPORT TO EXCEL (CSV WITH ALL NEW METRICS & V 1.0 BRANDING)
+        // EXPORT TO EXCEL (CSV WITH FINAL OPERATION TIME IN MINUTES INSTEAD OF AVERAGE TRIALS)
         // ==========================================
         function exportToCSV() {
+            const terms = getTerms();
             const routing = calculateRoutingMetrics();
             let totalNetTimeMin = 0;
             let maxNetCycleMin = 0;
@@ -2590,7 +2703,12 @@
                 : lineBalancePct;
 
             const lines = [];
-            lines.push(['تقرير دراسة الوقت وقياسات خط الإنتاج - 1 PCB Time Study & Line Balancing Report', 'V 1.0', 'إعداد: MuhamedElhamalawy', '01113362286']);
+            lines.push(['تقرير دراسة الوقت وقياسات خط الإنتاج - Production Line Time Study & Balancing Report', 'V 1.0', 'MuhamedElhamalawy', '01113362286']);
+            lines.push([
+                'اسم القائم بالقياس', appState.measurerName || '-',
+                'الرقم التعريفي (ID)', appState.measurerId || '-',
+                'نظام القياس', terms.ratioBadge
+            ]);
             lines.push([
                 'اسم المنتج / الموديل', appState.productName || '-',
                 'كود المنتج (Product Code)', appState.productCode || '-',
@@ -2598,22 +2716,22 @@
                 'الجروب التابع له (Group)', appState.productGroup || '-'
             ]);
             lines.push([
-                'عدد البوردات في الشيت (PCB/Sheet)', appState.pcbPerSheet,
-                'اسم المصنع', appState.factoryName || '1 PCB',
-                'اسم الخط', appState.lineName || '1 PCB',
+                terms.ratioTitle, appState.pcbPerSheet,
+                'اسم المصنع', appState.factoryName || '-',
+                'اسم الخط', appState.lineName || '-',
                 'التاريخ', appState.studyDate
             ]);
             lines.push([
                 'راوتينج العمالة (Labor Routing Min)', routing.laborRoutingMin,
                 'راوتينج الماكينات (Machine Routing Min)', routing.machineRoutingMin,
-                'معدل الساعة القياسي (60/Machine Routing)', Math.round(routing.stdHourlyRate),
+                `معدل الساعة القياسي (${terms.rateUnit})`, Math.round(routing.stdHourlyRate),
                 'عدد العمالة القياسي للخط (Labor/Machine)', routing.stdLineHC.toFixed(2)
             ]);
             lines.push([
                 'عدد العمالة الفعلي الكلي (Online+Offline)', actualTotalHC,
                 'عنق الزجاجة (Bottleneck)', `"${bottleneckName}"`,
                 'زمن عنق الزجاجة (Min)', maxNetCycleMin.toFixed(4),
-                'المعدل الفعلي الجديد بالساعة (PCB/Hr)', Math.round(actualHourlyRate),
+                `المعدل الفعلي الجديد بالساعة (${terms.rateUnit})`, Math.round(actualHourlyRate),
                 'نسبة توازن الخط (Line Balance %)', `${lineBalancePct.toFixed(1)}%`,
                 'كفاءة الخط مقارنة بالراوتينج (%)', `${lineEfficiencyPct.toFixed(1)}%`
             ]);
@@ -2628,31 +2746,32 @@
                 trialHeaders.push(`T${i} (sec)`);
             }
 
+            // Table Headers: Replaced Average Trial columns with Final Operation Time in Minutes (الزمن النهائي للعملية بالدقائق)
             lines.push([
                 'م',
+                'اسم القائم بالقياس',
+                'ID القائم بالقياس',
                 'كود المنتج (Product Code)',
                 'العائلة (Family)',
                 'نوع العملية (Category)',
                 'اسم/رقم المرحلة (Station)',
                 'وصف العملية (Operation Description)',
-                'وحدة التشغيل (PCB / Sheet)',
-                'معامل قسمة الشيت (PCB/Sheet)',
+                `وحدة التشغيل (${terms.singleCode} / ${terms.multiCode})`,
+                `معامل القسمة (${terms.ratioBadge})`,
                 'حالة العملية (Online / Offline)',
                 'نوع المورد (Labor / Machine)',
                 'عدد العاملين المسجل (HC)',
                 'طريقة قياس الوقت (Operation / Labor)',
                 'عدد القراءات (Trials Count)',
-                'متوسط القراءة للوحدة (ثانية)',
-                'متوسط القراءة للوحدة (دقيقة)',
-                'زمن 1 PCB بعد قسمة الشيت (دقيقة)',
-                'الزمن النهائي المعتمد للعملية (دقيقة/PCB)',
+                'الزمن النهائي للعملية بالدقائق (Final Operation Time - Min)',
                 'نسبة تحميل المرحلة من عنق الزجاجة (%)',
-                'الإنتاجية بالساعة للمرحلة (UPH - PCB/Hr)',
+                `الإنتاجية بالساعة للمرحلة (${terms.rateUnit})`,
                 ...trialHeaders
             ]);
 
             appState.operations.forEach((op, idx) => {
                 const m = calculateOperationMetrics(op);
+                const unitLabel = getOpUnitDisplay(op);
                 const loadPct = maxNetCycleMin > 0 ? ((m.netCyclePerPcbMin / maxNetCycleMin) * 100) : 0;
                 const trialValues = [];
                 for (let i = 0; i < Math.max(1, maxTrials); i++) {
@@ -2661,21 +2780,20 @@
 
                 lines.push([
                     idx + 1,
+                    `"${(appState.measurerName || '-').replace(/"/g, '""')}"`,
+                    `"${(appState.measurerId || '-').replace(/"/g, '""')}"`,
                     `"${(appState.productCode || '-').replace(/"/g, '""')}"`,
                     `"${(appState.productFamily || '-').replace(/"/g, '""')}"`,
                     op.category,
                     `"${(op.name || '').replace(/"/g, '""')}"`,
                     `"${(op.description || '').replace(/"/g, '""')}"`,
-                    op.workUnit,
+                    unitLabel,
                     m.sheetDivisor,
                     op.lineMode,
                     op.resourceType,
                     m.hc,
                     m.calcMode === 'Labor' ? 'Labor (يقسم على عدد العاملين ÷HC)' : 'Operation (يتجاهل عدد العاملين)',
                     m.trialsCount,
-                    m.avgUnitSec.toFixed(2),
-                    m.avgUnitMin.toFixed(4),
-                    m.timePerPcbMin.toFixed(4),
                     m.netCyclePerPcbMin.toFixed(4),
                     `${loadPct.toFixed(1)}%`,
                     Math.round(m.uph),
@@ -2689,7 +2807,7 @@
             const a = document.createElement('a');
             a.href = url;
             const fileCode = appState.productCode ? `${appState.productCode}_` : '';
-            a.setAttribute('download', `TimeStudy_V1_${fileCode}${appState.productName || '1PCB'}_${appState.studyDate}.csv`);
+            a.setAttribute('download', `TimeStudy_V1_${fileCode}${appState.productName || 'Line'}_${appState.studyDate}.csv`);
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
